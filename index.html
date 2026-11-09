@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Викторина: Парк Горького</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #1a1a2e 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 18s ease infinite;
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Плавающие частицы */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 0 10px rgba(233, 69, 96, 0.45);
+            animation: floatParticle linear infinite;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(105vh) translateX(0) scale(0.5);
+                opacity: 0;
+            }
+            12% {
+                opacity: 0.75;
+            }
+            88% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(25px) scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 820px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.08);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            animation: containerIn 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes containerIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        header {
+            background: linear-gradient(120deg, #0d1b2a, #1b263b, #415a77, #1b263b);
+            background-size: 200% 200%;
+            animation: headerGlow 8s ease infinite;
+            color: white;
+            padding: 28px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes headerGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);
+            animation: shine 6s linear infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        header h1 {
+            font-size: 1.9rem;
+            margin-bottom: 6px;
+            position: relative;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            animation: titlePop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+        }
+
+        header p {
+            opacity: 0.92;
+            font-size: 0.98rem;
+            position: relative;
+            animation: titlePop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both;
+        }
+
+        @keyframes titlePop {
+            from {
+                opacity: 0;
+                transform: translateY(15px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #e8e8e8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #ff6b6b, #f9a825);
+            background-size: 200% 100%;
+            width: 0%;
+            transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+            animation: progressShine 2.5s linear infinite;
+            position: relative;
+        }
+
+        @keyframes progressShine {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .quiz-area {
+            padding: 32px;
+        }
+
+        .question-card {
+            display: none;
+        }
+
+        .question-card.active {
+            display: block;
+        }
+
+        .question-card.enter {
+            animation: slideInRight 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .question-card.exit {
+            animation: slideOutLeft 0.35s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutLeft {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+        }
+
+        .q-number {
+            font-size: 0.88rem;
+            color: #666;
+            margin-bottom: 10px;
+            animation: fadeUp 0.4s ease 0.1s both;
+        }
+
+        .q-text {
+            font-size: 1.28rem;
+            font-weight: 600;
+            margin-bottom: 26px;
+            line-height: 1.45;
+            color: #1a1a1a;
+            animation: fadeUp 0.45s ease 0.18s both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+            background: #fafafa;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: optionIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .option:nth-child(1) { animation-delay: 0.22s; }
+        .option:nth-child(2) { animation-delay: 0.30s; }
+        .option:nth-child(3) { animation-delay: 0.38s; }
+        .option:nth-child(4) { animation-delay: 0.46s; }
+
+        @keyframes optionIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .option:hover {
+            border-color: #e94560;
+            background: #fff5f5;
+            transform: translateX(6px) scale(1.01);
+            box-shadow: 0 4px 14px rgba(233, 69, 96, 0.18);
+        }
+
+        .option.selected {
+            border-color: #e94560;
+            background: linear-gradient(135deg, #fff0f3, #ffd6de);
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(233, 69, 96, 0.25);
+        }
+
+        .option.selected::after {
+            content: '✓';
+            margin-left: auto;
+            color: #c62828;
+            font-weight: 700;
+            font-size: 1.15rem;
+            animation: checkPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes checkPop {
+            from {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .option input {
+            margin-right: 12px;
+            margin-top: 3px;
+            accent-color: #e94560;
+            transform: scale(1.25);
+            cursor: pointer;
+        }
+
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 32px;
+            gap: 12px;
+        }
+
+        button {
+            padding: 13px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+
+        button:active::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .btn-prev {
+            background: #e8e8e8;
+            color: #555;
+        }
+
+        .btn-prev:hover:not(:disabled) {
+            background: #d5d5d5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .btn-next, .btn-submit {
+            background: linear-gradient(135deg, #e94560, #c62828);
+            color: white;
+            box-shadow: 0 4px 14px rgba(233, 69, 96, 0.35);
+        }
+
+        .btn-next:hover, .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px rgba(233, 69, 96, 0.45);
+        }
+
+        .btn-next:disabled, .btn-submit:disabled, .btn-prev:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Результат */
+        .result-screen {
+            display: none;
+            text-align: center;
+            padding: 44px 32px;
+            position: relative;
+        }
+
+        .result-screen.show {
+            display: block;
+            animation: resultIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes resultIn {
+            from {
+                opacity: 0;
+                transform: scale(0.92);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #e94560, #9b1b30);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 28px;
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.45);
+            position: relative;
+            animation: scoreBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes scoreBounce {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            60% {
+                transform: scale(1.12);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 3px solid rgba(233, 69, 96, 0.35);
+            animation: pulseRing 2s ease-out infinite;
+        }
+
+        @keyframes pulseRing {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1.25);
+                opacity: 0;
+            }
+        }
+
+        .score-circle .points {
+            font-size: 2.7rem;
+            font-weight: 700;
+            line-height: 1;
+            animation: countUp 0.6s ease 0.3s both;
+        }
+
+        .score-circle .total {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-title {
+            font-size: 1.55rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: #9b1b30;
+            animation: fadeUp 0.5s ease 0.35s both;
+        }
+
+        .result-message {
+            font-size: 1.12rem;
+            line-height: 1.65;
+            color: #444;
+            max-width: 520px;
+            margin: 0 auto 30px;
+            animation: fadeUp 0.5s ease 0.45s both;
+        }
+
+        .result-details {
+            background: #f7f7f7;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 28px;
+            text-align: left;
+            max-height: 320px;
+            overflow-y: auto;
+            animation: fadeUp 0.5s ease 0.55s both;
+        }
+
+        .result-details h3 {
+            margin-bottom: 14px;
+            color: #333;
+        }
+
+        .wrong-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.92rem;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .wrong-item:nth-child(2) { animation-delay: 0.05s; }
+        .wrong-item:nth-child(3) { animation-delay: 0.1s; }
+        .wrong-item:nth-child(4) { animation-delay: 0.15s; }
+
+        .wrong-item:last-child {
+            border-bottom: none;
+        }
+
+        .correct-answer {
+            color: #c62828;
+            font-weight: 600;
+        }
+
+        .your-answer {
+            color: #c62828;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #1976d2, #0d47a1);
+            color: white;
+            box-shadow: 0 4px 14px rgba(25, 118, 210, 0.35);
+            animation: fadeUp 0.5s ease 0.65s both;
+        }
+
+        .btn-restart:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px rgba(25, 118, 210, 0.45);
+        }
+
+        /* Старт */
+        .start-screen {
+            text-align: center;
+            padding: 56px 32px 48px;
+        }
+
+        .start-screen h2 {
+            margin-bottom: 14px;
+            color: #1a1a2e;
+            font-size: 1.6rem;
+            animation: fadeUp 0.6s ease 0.15s both;
+        }
+
+        .start-screen p {
+            margin-bottom: 28px;
+            color: #555;
+            line-height: 1.55;
+            animation: fadeUp 0.6s ease 0.3s both;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #e94560, #c62828);
+            color: white;
+            font-size: 1.18rem;
+            padding: 15px 44px;
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.4);
+            animation: fadeUp 0.6s ease 0.45s both, pulseBtn 2.2s ease-in-out 1s infinite;
+        }
+
+        @keyframes pulseBtn {
+            0%, 100% {
+                box-shadow: 0 6px 20px rgba(233, 69, 96, 0.4);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 8px 28px rgba(233, 69, 96, 0.55);
+                transform: scale(1.03);
+            }
+        }
+
+        .btn-start:hover {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 10px 28px rgba(233, 69, 96, 0.5);
+            animation: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Конфетти */
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -20px;
+            z-index: 999;
+            animation: confettiFall linear forwards;
+            border-radius: 2px;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        
+    </style>
+</head>
+<body>
+    <!-- Плавающие частицы -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <header>
+            <h1>Викторина «Парк Горького»</h1>
+            <p>История и объекты легендарного парка Москвы</p>
+        </header>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <!-- Стартовый экран -->
+        <div class="start-screen" id="startScreen">
+            <h2>Готовы проверить свои знания?</h2>
+            <p>
+                30 вопросов о Парке Горького, его истории, скульптурах, прудах и знаковых местах.<br>
+                Вопросы идут в случайном порядке. За каждый правильный ответ — 1 балл.
+            </p>
+            <button class="btn-start" onclick="startQuiz()">Начать викторину</button>
+        </div>
+
+        <!-- Область вопросов -->
+        <div class="quiz-area hidden" id="quizArea">
+            <div id="questionsContainer"></div>
+            <div class="nav-buttons">
+                <button class="btn-prev" id="btnPrev" onclick="prevQuestion()" disabled>← Назад</button>
+                <button class="btn-next" id="btnNext" onclick="nextQuestion()">Далее →</button>
+                <button class="btn-submit hidden" id="btnSubmit" onclick="showResults()">Завершить</button>
+            </div>
+        </div>
+
+        <!-- Экран результатов -->
+        <div class="result-screen" id="resultScreen">
+            <div class="score-circle">
+                <div class="points" id="scorePoints">0</div>
+                <div class="total">из 30</div>
+            </div>
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <div class="result-details" id="resultDetails"></div>
+            <button class="btn-restart" onclick="restartQuiz()">Пройти ещё раз</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "Что называют Партером в Парке Горького?",
+                options: [
+                    "территорию Нескучного сада вокруг Александринского дворца",
+                    "центральная часть парка",
+                    "парковый комплекс искусств вокруг здания Новой Третьяковки",
+                    "прогулочную зону вдоль всей Пушкинской набережной"
+                ],
+                correct: 1
+            },
+            {
+                q: "Что стало прообразом современного Парка Горького?",
+                options: [
+                    "Парижская выставка 1925 года (декоративных искусств и промышленности)",
+                    "1-ая всероссийская сельскохозяйственная и кустарная-промышленная выставка",
+                    "Выставка достижений народного достоинства (ВДНХ)",
+                    "«Выставка нового зодчества» 1927 года в Москве"
+                ],
+                correct: 1
+            },
+            {
+                q: "Что стало основанием для присвоения Парку имени – имени Горького?",
+                options: [
+                    "личное участие писателя в проектировании Генерального плана ЦПКиО",
+                    "юбилей писателя",
+                    "официальное шефство писателя над культурной программой парка",
+                    "проведение первого Всесоюзного съезда советских писателей на территории парка"
+                ],
+                correct: 1
+            },
+            {
+                q: "Кто из известных английских писателей-фантастов посетил Парк Горького в 1934 г. и назвал его «фабрикой счастливых людей»?",
+                options: [
+                    "А. Конан Дойл",
+                    "Г. Уэллс",
+                    "О. Хаксли",
+                    "Д. Р. Р. Толкин"
+                ],
+                correct: 1
+            },
+            {
+                q: "Что можно увидеть в парке искусств «Музеон»?",
+                options: [
+                    "исторические павильоны союзных республик",
+                    "четыре биома России (тундра, степь, лес, болота) через многоуровневый ландшафт",
+                    "скульптуры",
+                    "сады и розарии"
+                ],
+                correct: 2
+            },
+            {
+                q: "Что изучают в Зеленой школе?",
+                options: [
+                    "географию",
+                    "ботанику",
+                    "историю",
+                    "химию"
+                ],
+                correct: 1
+            },
+            {
+                q: "Что можно было увидеть на Голицынских прудах в советскую эпоху?",
+                options: [
+                    "цапли",
+                    "балет",
+                    "редкие кувшинки",
+                    "опера"
+                ],
+                correct: 1
+            },
+            {
+                q: "Кто из известных архитекторов XIX века является автором Ротонды Голицынской больницы на Пушкинской набережной?",
+                options: [
+                    "М. Казаков",
+                    "О. Бове",
+                    "В. Баженов",
+                    "Д. Жилярди"
+                ],
+                correct: 0
+            },
+            {
+                q: "Кто послужил прототипом скульптуры «Балерина», расположенной в партерной части парка?",
+                options: [
+                    "балерина Майя Плисецкая",
+                    "балерина Галина Уланова",
+                    "балерина Анна Павлова",
+                    "балерина Ольга Лепешинская"
+                ],
+                correct: 1
+            },
+            {
+                q: "Что (какая скульптура) является символом Парка Горького?",
+                options: [
+                    "Ныряльщица",
+                    "Прыжок в воду",
+                    "Девушка с веслом",
+                    "Рабочий и колхозница"
+                ],
+                correct: 2
+            },
+            {
+                q: "Где в Парке Горького находится самый большой фонтан?",
+                options: [
+                    "в Нескучном саду",
+                    "в Партере",
+                    "на Воробьевых горах",
+                    "у главного входа в парк искусств «Музеон»"
+                ],
+                correct: 1
+            },
+            {
+                q: "Где оборудован пляж с шезлонгами?",
+                options: [
+                    "Голицынский пруд",
+                    "Андреевские пруды",
+                    "Пионерский пруд",
+                    "Воробьевский пруд"
+                ],
+                correct: 2
+            },
+            {
+                q: "Где располагался самый большой в Европе сад, созданный Демидовым в XVIII веке?",
+                options: [
+                    "на Воробьевых горах",
+                    "на Музеоне",
+                    "в Нескучном саду",
+                    "в Партере"
+                ],
+                correct: 2
+            },
+            {
+                q: "Где находится канатная дорога, которая ведёт через Москву-реку?",
+                options: [
+                    "возле Пушкинского моста",
+                    "на Воробьевых горах",
+                    "возле Патриаршего моста",
+                    "на Крымской набережной"
+                ],
+                correct: 1
+            },
+            {
+                q: "Где в Парке Горького находится смотровая площадка с видом на Москву-реку?",
+                options: [
+                    "Кремлевская набережная",
+                    "Москворецкая набережная",
+                    "Пушкинская набережная",
+                    "Котельническая набережная"
+                ],
+                correct: 2
+            },
+            {
+                q: "Где на территории Парка Горького размещается первая в России публичная библиотека по современному искусству?",
+                options: [
+                    "Павильон «Шестигранник»",
+                    "музей «Гараж»",
+                    "Охотничий домик",
+                    "Зеленая школа"
+                ],
+                correct: 1
+            },
+            {
+                q: "Где, на какой площадке, выступал известный рок-музыкант Виктор Цой?",
+                options: [
+                    "Эстрада в Нескучном саду",
+                    "Музыкальная беседка в Партере",
+                    "Зеленый театр",
+                    "Открытая сцена на Крымской набережной"
+                ],
+                correct: 2
+            },
+            {
+                q: "Где проходит уже на протяжении 30 лет игра «Что? Где? Когда?»",
+                options: [
+                    "Нескучный сад, Охотничий домик",
+                    "Летний домик графа Орлова",
+                    "Усадьба Голицыных, Чайный павильон",
+                    "Белая ротонда на Пушкинской набережной"
+                ],
+                correct: 0
+            },
+            {
+                q: "Где находится один из старейших водоразборных фонтанов Москвы скульптора Джованни Витали?",
+                options: [
+                    "парк искусств «Музеон»",
+                    "Нескучный сад",
+                    "центральная часть Партера",
+                    "Пушкинская набережная"
+                ],
+                correct: 1
+            },
+            {
+                q: "Где в Парке Горького лучше всего видны звезды?",
+                options: [
+                    "смотровая площадка на крыше Главного входа",
+                    "здание обсерватории",
+                    "смотровая площадка Воробьевых гор",
+                    "смотровая площадка на Пушкинской набережной"
+                ],
+                correct: 1
+            },
+            {
+                q: "Когда вы гуляете по Пушкинской набережной парка, вдоль какой главной водной артерии столицы проходит ваш маршрут?",
+                options: [
+                    "Яуза",
+                    "Москва-река",
+                    "Сходня",
+                    "Неглинная"
+                ],
+                correct: 1
+            },
+            {
+                q: "Когда у Главного входа в парк наконец появилась его монументальная и узнаваемая Арка с колоннами?",
+                options: [
+                    "в 1920-е годы при открытии",
+                    "в 1930-е годы во время масштабного расширения парка",
+                    "в 1950-е во время послевоенной реконструкции",
+                    "в 1960-е годы, к первому полету человека в космос"
+                ],
+                correct: 2
+            },
+            {
+                q: "Когда к Парку Горького официально присоединили Нескучный сад и природный заказник «Воробьевы горы»?",
+                options: [
+                    "в XX веке в ходе советской модернизации парка",
+                    "в XXI веке",
+                    "в XIX веке при создании единой прогулочной зоны столицы",
+                    "они изначально проектировались как одна территория"
+                ],
+                correct: 1
+            },
+            {
+                q: "Когда был построен павильон «Шестигранник» и по какому случаю?",
+                options: [
+                    "к официальному открытию Центрального парка культуры и отдыха в 1928 году",
+                    "для всесоюзной сельскохозяйственной и кустарно-промышленной выставки в 1923 году",
+                    "к празднованию послевоенного юбилея Москвы в 1947 году",
+                    "Для Парижской выставки 1925 года (декоративных искусств и промышленности)"
+                ],
+                correct: 1
+            },
+            {
+                q: "Когда на Воробьевых горах по проекту архитектора Виталия Долганова была сооружена знаменитая смотровая площадка?",
+                options: [
+                    "в 1849 году",
+                    "в 1914 году",
+                    "в 1949 году",
+                    "в 1961 году"
+                ],
+                correct: 2
+            },
+            {
+                q: "Когда Воробьевы горы стали местом празднования коронации?",
+                options: [
+                    "во время коронации Александра II и его жены Марии Александровны",
+                    "во время коронации Александра III и его жены Марии Федоровны",
+                    "во время коронации Николая II и его жены Александры Федоровны",
+                    "во время коронации Павла I и его жены Марии Федоровны"
+                ],
+                correct: 2
+            },
+            {
+                q: "Когда, по какому случаю, Пушкинская набережная получила свое название?",
+                options: [
+                    "к 150-летию со дня рождения А.С.Пушкина",
+                    "по случаю 100-летия со дня смерти А.С.Пушкина",
+                    "в год открытия знаменитого памятника А.С.Пушкину в Москве",
+                    "во время проведения всесоюзных Пушкинских дней поэзии"
+                ],
+                correct: 1
+            },
+            {
+                q: "Когда Музеон получил статус Музея под открытым небом?",
+                options: [
+                    "в 1945 г.",
+                    "в 1992 г.",
+                    "в 1961 г.",
+                    "в 2000 г."
+                ],
+                correct: 1
+            },
+            {
+                q: "Когда, в каком году, музыкант Стас Намин открыл на территории Парка Горького первый в стране продюсерский центр?",
+                options: [
+                    "в 1960-е г.",
+                    "в 1970-е г.",
+                    "в 1980-е г.",
+                    "в 1990-е г."
+                ],
+                correct: 2
+            },
+            {
+                q: "Когда Парк Горького отмечает 100-летний юбилей?",
+                options: [
+                    "в 2026 г.",
+                    "в 2027 г.",
+                    "в 2028 г.",
+                    "в 2030 г."
+                ],
+                correct: 2
+            }
+        ];
+
+        let shuffled = [];
+        let currentIndex = 0;
+        let answers = [];
+        let isAnimating = false;
+
+        // Создаём плавающие частицы
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 22; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = 3 + Math.random() * 7;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.animationDuration = (10 + Math.random() * 14) + 's';
+                particle.style.animationDelay = (Math.random() * 12) + 's';
+                // немного вариации цвета
+                if (Math.random() > 0.6) {
+                    particle.style.background = 'rgba(233, 69, 96, 0.45)';
+                    particle.style.boxShadow = '0 0 12px rgba(233, 69, 96, 0.5)';
+                }
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function startQuiz() {
+            shuffled = shuffleArray(questions);
+            answers = new Array(shuffled.length).fill(null);
+            currentIndex = 0;
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('quizArea').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.remove('show');
+            renderQuestion(true);
+            updateProgress();
+        }
+
+        function renderQuestion(first = false) {
+            const container = document.getElementById('questionsContainer');
+            const q = shuffled[currentIndex];
+            const letters = ['а', 'б', 'в', 'г'];
+
+            let html = `
+                <div class="question-card active ${first ? 'enter' : 'enter'}">
+                    <div class="q-number">Вопрос ${currentIndex + 1} из ${shuffled.length}</div>
+                    <div class="q-text">${q.q}</div>
+                    <div class="options">
+            `;
+
+            q.options.forEach((opt, i) => {
+                const checked = answers[currentIndex] === i ? 'checked' : '';
+                const selectedClass = answers[currentIndex] === i ? 'selected' : '';
+                html += `
+                    <div class="option ${selectedClass}" onclick="selectOption(${i})">
+                        <input type="radio" name="q${currentIndex}" id="opt${i}" value="${i}" ${checked}>
+                        <label for="opt${i}"><strong>${letters[i]})</strong> ${opt}</label>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+
+            document.getElementById('btnPrev').disabled = currentIndex === 0;
+            const isLast = currentIndex === shuffled.length - 1;
+            document.getElementById('btnNext').classList.toggle('hidden', isLast);
+            document.getElementById('btnSubmit').classList.toggle('hidden', !isLast);
+        }
+
+        function selectOption(index) {
+            answers[currentIndex] = index;
+            const options = document.querySelectorAll('.option');
+            options.forEach((el, i) => {
+                el.classList.toggle('selected', i === index);
+                el.querySelector('input').checked = i === index;
+            });
+        }
+
+        function nextQuestion() {
+            if (isAnimating || currentIndex >= shuffled.length - 1) return;
+            isAnimating = true;
+            const card = document.querySelector('.question-card');
+            card.classList.remove('enter');
+            card.classList.add('exit');
+            setTimeout(() => {
+                currentIndex++;
+                renderQuestion();
+                updateProgress();
+                isAnimating = false;
+            }, 320);
+        }
+
+        function prevQuestion() {
+            if (isAnimating || currentIndex <= 0) return;
+            isAnimating = true;
+            const card = document.querySelector('.question-card');
+            card.classList.remove('enter');
+            card.classList.add('exit');
+            setTimeout(() => {
+                currentIndex--;
+                renderQuestion();
+                updateProgress();
+                isAnimating = false;
+            }, 320);
+        }
+
+        function updateProgress() {
+            const pct = ((currentIndex + 1) / shuffled.length) * 100;
+            document.getElementById('progress').style.width = pct + '%';
+        }
+
+        function launchConfetti() {
+            const colors = ['#e94560', '#ff6b6b', '#f9a825', '#ffb300', '#415a77', '#778da9', '#fff'];
+            for (let i = 0; i < 60; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDuration = (2.5 + Math.random() * 2.5) + 's';
+                piece.style.animationDelay = (Math.random() * 0.8) + 's';
+                piece.style.width = (6 + Math.random() * 8) + 'px';
+                piece.style.height = (6 + Math.random() * 8) + 'px';
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                document.body.appendChild(piece);
+                setTimeout(() => piece.remove(), 5500);
+            }
+        }
+
+        function showResults() {
+            let score = 0;
+            const wrongs = [];
+
+            shuffled.forEach((q, i) => {
+                if (answers[i] === q.correct) {
+                    score++;
+                } else {
+                    wrongs.push({
+                        question: q.q,
+                        your: answers[i] !== null ? q.options[answers[i]] : '— (не выбран)',
+                        correct: q.options[q.correct]
+                    });
+                }
+            });
+
+            const percent = (score / shuffled.length) * 100;
+            document.getElementById('scorePoints').textContent = score;
+
+            let title, message;
+            if (percent >= 80) {
+                title = "🎉 Отличный результат!";
+                message = "Поздравляем! У вас прекрасные знания Парка Горького. Вы отлично ориентируетесь в его истории, объектах и знаковых местах. Так держать!";
+                launchConfetti();
+            } else if (percent >= 50) {
+                title = "👍 Хорошая попытка!";
+                message = "Знания о Парке Горького у вас есть, но есть куда стремиться. Пройдите викторину ещё раз или прогуляйтесь по парку — и результат станет ещё лучше!";
+            } else {
+                title = "📚 Есть над чем поработать";
+                message = "Плоховато... Нужно развивать знания о Парке Горького. Рекомендуем почитать историю парка, посетить его и обратить внимание на скульптуры, пруды и исторические объекты. Удачи в следующий раз!";
+            }
+
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultMessage').textContent = message;
+
+            const details = document.getElementById('resultDetails');
+            if (wrongs.length === 0) {
+                details.innerHTML = '<h3>Все ответы верные! 🌟</h3>';
+            } else {
+                let html = `<h3>Разбор ошибок (${wrongs.length}):</h3>`;
+                wrongs.forEach((w, idx) => {
+                    html += `
+                        <div class="wrong-item">
+                            <div><strong>${idx + 1}. ${w.question}</strong></div>
+                            <div class="your-answer">Ваш ответ: ${w.your}</div>
+                            <div class="correct-answer">Правильный: ${w.correct}</div>
+                        </div>
+                    `;
+                });
+                details.innerHTML = html;
+            }
+
+            document.getElementById('quizArea').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('show');
+            document.getElementById('progress').style.width = '100%';
+        }
+
+        function restartQuiz() {
+            document.getElementById('resultScreen').classList.remove('show');
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('progress').style.width = '0%';
+        }
+    </script>
+</body>
+</html>
